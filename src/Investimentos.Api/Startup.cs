@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace Investimentos.Api
 {
@@ -30,6 +31,22 @@ namespace Investimentos.Api
             services.AddAuthentication(AzureADB2CDefaults.BearerAuthenticationScheme)
                 .AddAzureADB2CBearer(options => Configuration.Bind("AzureAdB2C", options));
             services.AddControllers();
+
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", 
+                        new OpenApiInfo 
+                            {
+                                Title = "Investimentos API",
+                                Version = "v1",
+                                Contact = new OpenApiContact
+                                    {
+                                        Name = "Rafael Monteiro Porto",
+                                        Email = "rafael.monteiro.porto@outlook.com"
+                                    },
+                                Description = "Esta é a API de Investimentos do cliente."
+                            });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,7 +57,14 @@ namespace Investimentos.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseSwagger();
+
+            app.UseSwaggerUI(options => 
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Investimentos API");
+            });
+
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
