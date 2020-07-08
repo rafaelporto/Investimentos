@@ -5,6 +5,7 @@ namespace Investimentos.Application.Interfaces
 {
     public interface ITesouroDiretoAdapter
     {
+        InvestimentoModel Map(TesouroDiretoModel model);
         IEnumerable<InvestimentoModel> Map(IEnumerable<TesouroDiretoModel> models);
     }
 }

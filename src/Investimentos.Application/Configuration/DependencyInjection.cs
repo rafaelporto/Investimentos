@@ -32,6 +32,10 @@ namespace Investimentos.Application.Configuration
             });
             
             services.AddScoped<ITesouroDiretoAdapter, TesouroDiretoAdapter>();
+            services.AddScoped<IRendaFixaAdapter, RendaFixaAdapter>();
+            services.AddScoped<IFundoAdapter, FundoAdapter>();
+
+            services.AddScoped<IInvestimentoService, InvestimentoService>();
 
             services.AddDefaultHttpClient<ITesouroDiretoService, TesouroDiretoService>();
             services.AddDefaultHttpClient<IRendaFixaService, RendaFixaService>();
@@ -54,7 +58,6 @@ namespace Investimentos.Application.Configuration
                             .AddPolicyHandler(GetRetryPolicy())
                             .AddPolicyHandler(GetCircuitBreakerPolicy());
         }
-
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
@@ -65,7 +68,6 @@ namespace Investimentos.Application.Configuration
                         $"{response?.Exception?.Message ?? response?.Result?.ReasonPhrase}" +
                         $"Execute again in {time.TotalSeconds} seconds"));
         }
-
         private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
             return HttpPolicyExtensions

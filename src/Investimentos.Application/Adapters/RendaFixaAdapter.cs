@@ -8,24 +8,24 @@ using Investimentos.Application.Exceptions;
 
 namespace Investimentos.Application.Adapters
 {
-    public class TesouroDiretoAdapter : ITesouroDiretoAdapter
+    public class RendaFixaAdapter : IRendaFixaAdapter
     {
-        private readonly ILogger<TesouroDiretoAdapter> _logger;
+        private readonly ILogger<RendaFixaAdapter> _logger;
 
-        public TesouroDiretoAdapter(ILogger<TesouroDiretoAdapter> logger)
+        public RendaFixaAdapter(ILogger<RendaFixaAdapter> logger)
         {
             _logger = logger;
         }
 
-        public InvestimentoModel Map(TesouroDiretoModel model)
+        public InvestimentoModel Map(RendaFixaModel model)
         {
             try
             {
                 var result = new InvestimentoModel
                 {
                     Nome = model.Nome,
-                    ValorInvestido = model.ValorInvestido,
-                    ValorTotal = model.ValorTotal,
+                    ValorInvestido = model.CapitalInvestido,
+                    ValorTotal = model.CapitalAtual,
                     Vencimento = model.Vencimento,
                     Ir = model.Ir,
                     ValorResgate = model.ValorResgate
@@ -34,22 +34,22 @@ namespace Investimentos.Application.Adapters
             }
             catch (Exception e)
             {
-                var ex = new AdapterException($"Nao foi possivel adaptar a entidade do tipo {nameof(TesouroDiretoModel)}.", e);
+                var ex = new AdapterException($"Nao foi possivel adaptar a entidade do tipo {nameof(RendaFixaModel)}.", e);
                 _logger.LogError(ex, "Ocorreu um erro ao adaptar a entidade {paramName} para {resultName}.",
-                                    nameof(TesouroDiretoModel), nameof(InvestimentoModel));
+                                    nameof(RendaFixaModel), nameof(InvestimentoModel));
                 return default;
             }
         }
 
-        public IEnumerable<InvestimentoModel> Map(IEnumerable<TesouroDiretoModel> models)
+        public IEnumerable<InvestimentoModel> Map(IEnumerable<RendaFixaModel> models)
         {
             try
             {
                 var result = models.Select(s => new InvestimentoModel
                 {
                     Nome = s.Nome,
-                    ValorInvestido = s.ValorInvestido,
-                    ValorTotal = s.ValorTotal,
+                    ValorInvestido = s.CapitalInvestido,
+                    ValorTotal = s.CapitalAtual,
                     Vencimento = s.Vencimento,
                     Ir = s.Ir,
                     ValorResgate = s.ValorResgate
@@ -60,9 +60,9 @@ namespace Investimentos.Application.Adapters
 
             catch (Exception e)
             {
-                var ex = new AdapterException($"Nao foi possivel adaptar as entidades do tipo {nameof(TesouroDiretoModel)}.", e);
+                var ex = new AdapterException($"Nao foi possivel adaptar as entidades do tipo {nameof(RendaFixaModel)}.", e);
                 _logger.LogError(ex, "Ocorreu um erro ao adaptar as entidades {paramName} para {resultName}.",
-                                    nameof(TesouroDiretoModel), nameof(InvestimentoModel));
+                                    nameof(RendaFixaModel), nameof(InvestimentoModel));
                 return default;
             }
         }

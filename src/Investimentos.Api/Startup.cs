@@ -7,6 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Investimentos.Application.Configuration;
+using System.Reflection;
+using System.IO;
+using System;
+using System.Linq;
 
 namespace Investimentos.Api
 {
@@ -27,7 +31,7 @@ namespace Investimentos.Api
 
             services.AddApplication(Configuration);
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddSwaggerGen(config =>
             {
@@ -43,6 +47,14 @@ namespace Investimentos.Api
                                     },
                                 Description = "Esta é a API de Investimentos do cliente."
                             });
+                
+                var projectsPrefixsName = "Investimentos";
+                var pathToXmlDocumentsToLoad = AppDomain.CurrentDomain.GetAssemblies()
+                        .Where(x => x.FullName.StartsWith(projectsPrefixsName))
+                        .Select(s => Path.Combine(AppContext.BaseDirectory, $"{s.GetName().Name}.xml"))
+                        .ToList();
+
+                pathToXmlDocumentsToLoad.ForEach(x => config.IncludeXmlComments(x));
             });
         }
 

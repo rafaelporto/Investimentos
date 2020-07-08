@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Investimentos.Application.Interfaces;
 using Investimentos.Application.Models;
@@ -23,13 +24,13 @@ namespace Investimentos.Application.Services
             _logger = logger;
         }
 
-        // public async Task<TotalInvestimentosModel> GetInvestimentos()
-        // {
-        //     var tds = await _tesouroDiretoService.GetTesourosDiretos();
-        //     var lcis = await _rendaFixaService.GetRendasFixas();
-        //     var fundos = await _fundoService.GetFundos();
+        public async Task<TotalInvestimentosModel> GetInvestimentos()
+        {
+            var totalInvestimentos = new TotalInvestimentosModel(await _tesouroDiretoService.GetInvestimentos());
+            totalInvestimentos.AddInvestimentos(await _rendaFixaService.GetInvestimentos());
+            totalInvestimentos.AddInvestimentos(await _fundoService.GetInvestimentos());
 
-
-        // }
+            return totalInvestimentos;
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace Investimentos.Application.Services
             return default;
         }
 
-        public async Task<Result<TdsModel>> GetTesourosDiretos()
+        private async Task<Result<TdsModel>> GetTesourosDiretos()
         {
             var url = _options.GetTesouroDireto();
 

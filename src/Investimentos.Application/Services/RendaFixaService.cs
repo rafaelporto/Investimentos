@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Investimentos.Application.Configuration;
@@ -11,18 +12,33 @@ namespace Investimentos.Application.Services
 {
     public class RendaFixaService : IRendaFixaService
     {
+        private readonly IRendaFixaAdapter _adapter;
         private readonly HttpClient _client;
         private readonly ApplicationOptions _options;
         private readonly ILogger<RendaFixaService> _logger;
 
-        public RendaFixaService(HttpClient client, IOptions<ApplicationOptions> options, ILogger<RendaFixaService> logger)
+        public RendaFixaService(HttpClient client, 
+                                IRendaFixaAdapter adapter,
+                                IOptions<ApplicationOptions> options,
+                                ILogger<RendaFixaService> logger)
         {
+            _adapter = adapter;
             _client = client;
             _options = options?.Value;
             _logger = logger;
         }
 
-        public async Task<Result<LcisModel>> GetRendasFixas()
+        public async Task<IEnumerable<InvestimentoModel>> GetInvestimentos()
+        {
+            var result = await GetRendasFixas();
+
+            if (result.Succeeded)
+                return _adapter.Map(result.Data.Lcis);
+
+            return default;
+        }
+
+        private async Task<Result<LcisModel>> GetRendasFixas()
         {
             var url = _options.GetRendaFixa();
 
