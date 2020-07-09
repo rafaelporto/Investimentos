@@ -7,5 +7,3 @@ src/Investimentos.IoC/bin
 src/Investimentos.IoC/obj
 .vscode
 src/Investimentos.Api/obj/Investimentos.Api.csproj.nuget.g.props
-
-src/Investimentos.Application.Tests/obj/
