@@ -21,6 +21,12 @@ namespace Investimentos.Application.Adapters
         {
             try
             {
+                if (model is null)
+                {
+                    _logger.LogInformation("Parametro do tipo {type} nulo. Method: {method}", nameof(RendaFixaModel), nameof(Map));
+                    return default;
+                }
+
                 var result = new InvestimentoModel
                 {
                     Nome = model.Nome,
@@ -45,6 +51,12 @@ namespace Investimentos.Application.Adapters
         {
             try
             {
+                if (models is null)
+                {
+                    _logger.LogInformation("Parametro do tipo {type} nulo. Method: {method}", nameof(RendaFixaModel), nameof(Map));
+                    return default;
+                }
+
                 var result = models.Select(s => new InvestimentoModel
                 {
                     Nome = s.Nome,
