@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,36 +7,36 @@ using Investimentos.Application.Models;
 using Investimentos.Application.Tests.Fixtures;
 using Xunit;
 
-namespace Investimentos.Application.Tests.Adapters
+namespace Investimentos.Application.Tests.Mappers
 {
-    [Collection(nameof(FundoAdapterUnitTestsCollection))]
-    public class FundoAdapterUnitTests
+    [Collection(nameof(FundoMapperUnitTestsCollection))]
+    public class FundoMapperUnitTests
     {
-        private readonly FundoAdapterFixture _fixture;
+        private readonly FundoMapperFixture _fixture;
 
-        public FundoAdapterUnitTests(FundoAdapterFixture fixture)
+        public FundoMapperUnitTests(FundoMapperFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact(DisplayName = "Map FundoModel to InvestimentoModel - Valid")]
-        [Trait("FundoAdapter", "Adapters")]
+        [Trait("FundoMapper", "Mappers")]
         public async Task Map_FundoModel_to_InvestimentoModel_Valid()
         {
             var model = _fixture.GerarFundoModel();
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(model);
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(model);
 
             await ValidateMapObject(model, result);
         }
 
         [Fact(DisplayName = "Map FundoModel to InvestimentoModel - Invalid")]
-        [Trait("FundoAdapter", "Adapters")]
+        [Trait("FundoMapper", "Mappers")]
         public async Task Map_FundoModel_to_InvestimentoModel_invalid()
         {
             var models = _fixture.GerarFundoModel(2);
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(models.FirstOrDefault());
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(models.FirstOrDefault());
 
             var modelToCompare = models.LastOrDefault();
 
@@ -49,12 +50,12 @@ namespace Investimentos.Application.Tests.Adapters
         }
 
         [Fact(DisplayName = "Map List FundoModel to InvestimentoModel - Valid")]
-        [Trait("FundoAdapter", "Adapters")]
+        [Trait("FundoMapper", "Mappers")]
         public async Task Map__List_FundoModel_to_InvestimentoModel_Valid()
         {
             var models = _fixture.GerarFundoModel(20);
-            var adapter = _fixture.GetAdapter();
-            var results = adapter.Map(models);
+            var mapper = _fixture.GetMapper();
+            var results = mapper.Map<IEnumerable<InvestimentoModel>>(models);
 
             models.Should().NotBeNull();
             models.Should().NotBeEmpty();

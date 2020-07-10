@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,36 +7,36 @@ using Investimentos.Application.Models;
 using Investimentos.Application.Tests.Fixtures;
 using Xunit;
 
-namespace Investimentos.Application.Tests.Adapters
+namespace Investimentos.Application.Tests.Mappers
 {
-    [Collection(nameof(RendaFixaAdapterUnitTestsCollection))]
-    public class RendaFixaAdapterUnitTests
+    [Collection(nameof(RendaFixaMapperUnitTestsCollection))]
+    public class RendaFixaMapperUnitTests
     {
-        private readonly RendaFixaAdapterFixture _fixture;
+        private readonly RendaFixaMapperFixture _fixture;
 
-        public RendaFixaAdapterUnitTests(RendaFixaAdapterFixture fixture)
+        public RendaFixaMapperUnitTests(RendaFixaMapperFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact(DisplayName = "Map RendaFixaModel to InvestimentoModel - Valid")]
-        [Trait("RendaFixaAdapter", "Adapters")]
+        [Trait("RendaFixaMapper", "Mappers")]
         public async Task Map_RendaFixaModel_to_InvestimentoModel_Valid()
         {
             var model = _fixture.GerarRendaFixaModel();
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(model);
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(model);
 
             await ValidateMapObject(model, result);
         }
 
         [Fact(DisplayName = "Map RendaFixaModel to InvestimentoModel - Invalid")]
-        [Trait("RendaFixaAdapter", "Adapters")]
+        [Trait("RendaFixaMapper", "Mappers")]
         public async Task Map_RendaFixaModel_to_InvestimentoModel_invalid()
         {
             var models = _fixture.GerarRendaFixaModel(2);
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(models.FirstOrDefault());
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(models.FirstOrDefault());
 
             var modelToCompare = models.LastOrDefault();
 
@@ -49,12 +50,12 @@ namespace Investimentos.Application.Tests.Adapters
         }
 
         [Fact(DisplayName = "Map List RendaFixaModel to InvestimentoModel - Valid")]
-        [Trait("RendaFixaAdapter", "Adapters")]
+        [Trait("RendaFixaMapper", "Mappers")]
         public async Task Map__List_RendaFixaModel_to_InvestimentoModel_Valid()
         {
             var models = _fixture.GerarRendaFixaModel(20);
-            var adapter = _fixture.GetAdapter();
-            var results = adapter.Map(models);
+            var mapper = _fixture.GetMapper();
+            var results = mapper.Map<IEnumerable<InvestimentoModel>>(models);
 
             models.Should().NotBeNull();
             models.Should().NotBeEmpty();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,36 +7,36 @@ using Investimentos.Application.Models;
 using Investimentos.Application.Tests.Fixtures;
 using Xunit;
 
-namespace Investimentos.Application.Tests.Adapters
+namespace Investimentos.Application.Tests.Mappers
 {
-    [Collection(nameof(TesouroDiretoAdapterUnitTestsCollection))]
+    [Collection(nameof(TesouroDiretoMapperUnitTestsCollection))]
     public class TesouroDiretoUnitTests
     {
-        private readonly TesouroDiretoAdapterFixture _fixture;
+        private readonly TesouroDiretoMapperFixture _fixture;
 
-        public TesouroDiretoUnitTests(TesouroDiretoAdapterFixture fixture)
+        public TesouroDiretoUnitTests(TesouroDiretoMapperFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact(DisplayName = "Map TesouroDiretoModel to InvestimentoModel - Valid")]
-        [Trait("TesouroDiretoAdapter", "Adapters")]
+        [Trait("TesouroDiretoMapper", "Mappers")]
         public async Task Map_TesouroDiretoModel_to_InvestimentoModel_Valid()
         {
             var model = _fixture.GerarTesouroDiretoModel();
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(model);
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(model);
 
             await ValidateMapObject(model, result);
         }
 
         [Fact(DisplayName = "Map TesouroDiretoModel to InvestimentoModel - Invalid")]
-        [Trait("TesouroDiretoAdapter", "Adapters")]
+        [Trait("TesouroDiretoMapper", "Mappers")]
         public async Task Map_TesouroDiretoModel_to_InvestimentoModel_invalid()
         {
             var models = _fixture.GerarTesouroDiretoModel(2);
-            var adapter = _fixture.GetAdapter();
-            var result = adapter.Map(models.FirstOrDefault());
+            var mapper = _fixture.GetMapper();
+            var result = mapper.Map<InvestimentoModel>(models.FirstOrDefault());
 
             var modelToCompare = models.LastOrDefault();
 
@@ -49,12 +50,12 @@ namespace Investimentos.Application.Tests.Adapters
         }
 
         [Fact(DisplayName = "Map List TesouroDiretoModel to InvestimentoModel - Valid")]
-        [Trait("TesouroDiretoAdapter", "Adapters")]
+        [Trait("TesouroDiretoMapper", "Mappers")]
         public async Task Map__List_TesouroDiretoModel_to_InvestimentoModel_Valid()
         {
             var models = _fixture.GerarTesouroDiretoModel(20);
-            var adapter = _fixture.GetAdapter();
-            var results = adapter.Map(models);
+            var mapper = _fixture.GetMapper();
+            var results = mapper.Map<IEnumerable<InvestimentoModel>>(models);
 
             models.Should().NotBeNull();
             models.Should().NotBeEmpty();

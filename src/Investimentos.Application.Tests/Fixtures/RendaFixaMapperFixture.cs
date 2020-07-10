@@ -1,29 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using Bogus;
-using Investimentos.Application.Adapters;
+using Investimentos.Application.AutoMapperProfiles;
 using Investimentos.Application.Models;
 using Moq.AutoMock;
 using Xunit;
 
 namespace Investimentos.Application.Tests.Fixtures
 {
-    [CollectionDefinition(nameof(RendaFixaAdapterUnitTestsCollection))]
-    public class RendaFixaAdapterUnitTestsCollection : ICollectionFixture<RendaFixaAdapterFixture> { }
+    [CollectionDefinition(nameof(RendaFixaMapperUnitTestsCollection))]
+    public class RendaFixaMapperUnitTestsCollection : ICollectionFixture<RendaFixaMapperFixture> { }
 
-    public class RendaFixaAdapterFixture : IDisposable
+    public class RendaFixaMapperFixture : IDisposable
     {
         public readonly AutoMocker Mocker = new AutoMocker();
         const string _localeBogus = "pt_BR";
-        private RendaFixaAdapter _adapter;
+        private IMapper _mapper;
 
-        public RendaFixaAdapter GetAdapter()
+        public IMapper GetMapper()
         {
-            if (_adapter is null)
-                _adapter = Mocker.CreateInstance<RendaFixaAdapter>();
-            
-            return _adapter;
+            if (_mapper is null)
+            {
+                var mapperConfig = new MapperConfiguration(cfg =>
+                            {
+                                cfg.AddProfile(new RendaFixaProfile());
+                            });
+                _mapper = mapperConfig.CreateMapper();
+            }
+
+            return _mapper;
         }
 
         public RendaFixaModel GerarRendaFixaModel()

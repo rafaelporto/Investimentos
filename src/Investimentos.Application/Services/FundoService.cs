@@ -48,7 +48,7 @@ namespace Investimentos.Application.Services
                 return _mapper.Map<IEnumerable<InvestimentoModel>>(result.Data.Fundos);
             }
 
-            return default;
+            return new List<InvestimentoModel>();
         }
 
         private async Task<Result<FundosModel>> GetFundos()
