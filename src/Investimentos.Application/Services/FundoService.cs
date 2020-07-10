@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Investimentos.Application.Configuration;
 using Investimentos.Application.Interfaces;
 using Investimentos.Application.Models;
@@ -13,19 +14,19 @@ namespace Investimentos.Application.Services
     public class
     FundoService : IFundoService
     {
-        private readonly IFundoAdapter _adapter;
+        private readonly IMapper _mapper;
         private readonly HttpClient _client;
         private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<FundoService> _logger;
 
         public FundoService(HttpClient client,
-                            IFundoAdapter adapter,
+                            IMapper mapper,
                             ICacheService cacheService,
                             IOptions<ApplicationOptions> options,
                             ILogger<FundoService> logger)
         {
-            _adapter = adapter;
+            _mapper = mapper;
             _client = client;
             _cacheService = cacheService;
             _options = options?.Value;
@@ -37,14 +38,14 @@ namespace Investimentos.Application.Services
             var modelsCached = _cacheService.GetFundos();
 
             if (modelsCached != null)
-                return _adapter.Map(modelsCached.Fundos);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(modelsCached.Fundos);
 
             var result = await GetFundos();
 
             if (result.Succeeded)
             {
                 _cacheService.AddFundos(result.Data);
-                return _adapter.Map(result.Data.Fundos);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(result.Data.Fundos);
             }
 
             return default;

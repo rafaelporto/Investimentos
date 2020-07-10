@@ -31,6 +31,8 @@ namespace Investimentos.Application.Configuration
             services.AddScoped<IRendaFixaAdapter, RendaFixaAdapter>();
             services.AddScoped<IFundoAdapter, FundoAdapter>();
 
+            services.AddAutoMapper();
+
             services.AddScoped<IInvestimentoService, InvestimentoService>();
             services.AddScoped<ICacheService, CacheService>();
 

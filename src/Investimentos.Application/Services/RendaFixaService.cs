@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Investimentos.Application.Configuration;
 using Investimentos.Application.Interfaces;
 using Investimentos.Application.Models;
@@ -12,19 +13,19 @@ namespace Investimentos.Application.Services
 {
     public class RendaFixaService : IRendaFixaService
     {
-        private readonly IRendaFixaAdapter _adapter;
+        private readonly IMapper _mapper;
         private readonly HttpClient _client;
         private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<RendaFixaService> _logger;
 
         public RendaFixaService(HttpClient client, 
-                                IRendaFixaAdapter adapter,
+                                IMapper mapper,
                                 ICacheService cacheService,
                                 IOptions<ApplicationOptions> options,
                                 ILogger<RendaFixaService> logger)
         {
-            _adapter = adapter;
+            _mapper = mapper;
             _client = client;
             _cacheService = cacheService;
             _options = options?.Value;
@@ -36,14 +37,14 @@ namespace Investimentos.Application.Services
             var modelCached = _cacheService.GetRendasFixas();
 
             if (modelCached != null)
-                return _adapter.Map(modelCached.Lcis);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(modelCached.Lcis);
 
             var result = await GetRendasFixas();
 
             if (result.Succeeded)
             {
                 _cacheService.AddRendasFixas(result.Data);
-                return _adapter.Map(result.Data.Lcis);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(result.Data.Lcis);
             }
 
             return default;

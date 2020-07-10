@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Investimentos.Application.Configuration;
 using Investimentos.Application.Interfaces;
 using Investimentos.Application.Models;
@@ -12,19 +13,19 @@ namespace Investimentos.Application.Services
 {
     public class TesouroDiretoService : ITesouroDiretoService
     {
-        private readonly ITesouroDiretoAdapter _adapter;
+        private readonly IMapper _mapper;
         private readonly HttpClient _client;
         private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<TesouroDiretoService> _logger;
 
         public TesouroDiretoService(HttpClient client,
-                                    ITesouroDiretoAdapter adapter,
+                                    IMapper mapper,
                                     ICacheService cacheService,
                                     IOptions<ApplicationOptions> options,
                                     ILogger<TesouroDiretoService> logger)
         {
-            _adapter = adapter;
+            _mapper = mapper;
             _client = client;
             _cacheService = cacheService;
             _options = options?.Value;
@@ -36,14 +37,14 @@ namespace Investimentos.Application.Services
             var modelCached = _cacheService.GetTesourosDiretos();
 
             if (modelCached != null)
-                return _adapter.Map(modelCached.TesouroDiretos);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(modelCached.TesouroDiretos);
 
             var result = await GetTesourosDiretos();
 
             if (result.Succeeded)
             {
                 _cacheService.AddTesourosDiretos(result.Data);
-                return _adapter.Map(result.Data.TesouroDiretos);
+                return _mapper.Map<IEnumerable<InvestimentoModel>>(result.Data.TesouroDiretos);
             }
 
             return default;
