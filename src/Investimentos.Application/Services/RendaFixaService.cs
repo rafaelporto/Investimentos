@@ -14,26 +14,37 @@ namespace Investimentos.Application.Services
     {
         private readonly IRendaFixaAdapter _adapter;
         private readonly HttpClient _client;
+        private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<RendaFixaService> _logger;
 
         public RendaFixaService(HttpClient client, 
                                 IRendaFixaAdapter adapter,
+                                ICacheService cacheService,
                                 IOptions<ApplicationOptions> options,
                                 ILogger<RendaFixaService> logger)
         {
             _adapter = adapter;
             _client = client;
+            _cacheService = cacheService;
             _options = options?.Value;
             _logger = logger;
         }
 
         public async Task<IEnumerable<InvestimentoModel>> GetInvestimentos()
         {
+            var modelCached = _cacheService.GetRendasFixas();
+
+            if (modelCached != null)
+                return _adapter.Map(modelCached.Lcis);
+
             var result = await GetRendasFixas();
 
             if (result.Succeeded)
+            {
+                _cacheService.AddRendasFixas(result.Data);
                 return _adapter.Map(result.Data.Lcis);
+            }
 
             return default;
         }

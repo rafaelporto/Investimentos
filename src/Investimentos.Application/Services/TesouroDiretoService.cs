@@ -14,27 +14,38 @@ namespace Investimentos.Application.Services
     {
         private readonly ITesouroDiretoAdapter _adapter;
         private readonly HttpClient _client;
+        private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<TesouroDiretoService> _logger;
 
-        public TesouroDiretoService(HttpClient client, 
+        public TesouroDiretoService(HttpClient client,
                                     ITesouroDiretoAdapter adapter,
+                                    ICacheService cacheService,
                                     IOptions<ApplicationOptions> options,
                                     ILogger<TesouroDiretoService> logger)
         {
             _adapter = adapter;
             _client = client;
+            _cacheService = cacheService;
             _options = options?.Value;
             _logger = logger;
         }
 
         public async Task<IEnumerable<InvestimentoModel>> GetInvestimentos()
         {
+            var modelCached = _cacheService.GetTesourosDiretos();
+
+            if (modelCached != null)
+                return _adapter.Map(modelCached.TesouroDiretos);
+
             var result = await GetTesourosDiretos();
 
             if (result.Succeeded)
-            return _adapter.Map(result.Data.TesouroDiretos);
-                
+            {
+                _cacheService.AddTesourosDiretos(result.Data);
+                return _adapter.Map(result.Data.TesouroDiretos);
+            }
+
             return default;
         }
 

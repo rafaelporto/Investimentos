@@ -15,26 +15,37 @@ namespace Investimentos.Application.Services
     {
         private readonly IFundoAdapter _adapter;
         private readonly HttpClient _client;
+        private readonly ICacheService _cacheService;
         private readonly ApplicationOptions _options;
         private readonly ILogger<FundoService> _logger;
 
         public FundoService(HttpClient client,
                             IFundoAdapter adapter,
+                            ICacheService cacheService,
                             IOptions<ApplicationOptions> options,
                             ILogger<FundoService> logger)
         {
             _adapter = adapter;
             _client = client;
+            _cacheService = cacheService;
             _options = options?.Value;
             _logger = logger;
         }
 
         public async Task<IEnumerable<InvestimentoModel>> GetInvestimentos()
         {
+            var modelsCached = _cacheService.GetFundos();
+
+            if (modelsCached != null)
+                return _adapter.Map(modelsCached.Fundos);
+
             var result = await GetFundos();
 
             if (result.Succeeded)
+            {
+                _cacheService.AddFundos(result.Data);
                 return _adapter.Map(result.Data.Fundos);
+            }
 
             return default;
         }

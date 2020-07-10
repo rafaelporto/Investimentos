@@ -1,14 +1,10 @@
-using System;
-using System.Diagnostics;
-using System.Net.Http;
 using Investimentos.Application.Adapters;
+using Investimentos.Application.Configuration.Bases;
 using Investimentos.Application.Exceptions;
 using Investimentos.Application.Interfaces;
 using Investimentos.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Polly;
-using Polly.Extensions.Http;
 
 namespace Investimentos.Application.Configuration
 {
@@ -36,47 +32,11 @@ namespace Investimentos.Application.Configuration
             services.AddScoped<IFundoAdapter, FundoAdapter>();
 
             services.AddScoped<IInvestimentoService, InvestimentoService>();
+            services.AddScoped<ICacheService, CacheService>();
 
             services.AddDefaultHttpClient<ITesouroDiretoService, TesouroDiretoService>();
             services.AddDefaultHttpClient<IRendaFixaService, RendaFixaService>();
             services.AddDefaultHttpClient<IFundoService, FundoService>();
-        }
-
-        private static IHttpClientBuilder AddDefaultHttpClient<TClient, TImplementation>(this IServiceCollection service)
-        where TClient : class
-        where TImplementation : class, TClient
-        {
-            return service.AddHttpClient<TClient, TImplementation>()
-                            .ConfigurePrimaryHttpMessageHandler(() =>
-                            {
-                                return new HttpClientHandler
-                                {
-                                    ServerCertificateCustomValidationCallback =
-                                    (message, cert, chain, errors) => { return true; }
-                                };
-                            })
-                            .AddPolicyHandler(GetRetryPolicy())
-                            .AddPolicyHandler(GetCircuitBreakerPolicy());
-        }
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            return HttpPolicyExtensions
-                    .HandleTransientHttpError()
-                    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                     (response, time) => Debug.WriteLine($"Fail to execute http request: " +
-                        $"{response?.Exception?.Message ?? response?.Result?.ReasonPhrase}" +
-                        $"Execute again in {time.TotalSeconds} seconds"));
-        }
-        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
-        {
-            return HttpPolicyExtensions
-                    .HandleTransientHttpError()
-                    .CircuitBreakerAsync(5, TimeSpan.FromSeconds(15),
-                     (response, time) => Debug.WriteLine($"Fail to execute http request: " +
-                        $"{response?.Exception?.Message ?? response?.Result?.ReasonPhrase}" +
-                        $"Execute again in {time.TotalSeconds} seconds"),
-                        () => Debug.WriteLine("Requests now is opened to receive http requests"));
         }
     }
 }
