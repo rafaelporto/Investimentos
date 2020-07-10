@@ -5,7 +5,11 @@
   </a>
 </p>
 
-> Investimentos é um projeto open-source escrito em .Net Core.
+> Investimentos é um projeto open-source escrito em .Net Core com a aplicação de boas práticas de desenvolvimento.
+
+> Neste projeto foi utilizado os frameworks e conceitos:
+- Swagger para documentação da API.
+- Healthcheck para monitoramento da aplicação.
 
 ## Author
 
