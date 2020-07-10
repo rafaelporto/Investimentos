@@ -7,9 +7,19 @@
 
 > Investimentos é um projeto open-source escrito em .Net Core com a aplicação de boas práticas de desenvolvimento.
 
-> Neste projeto foi utilizado os frameworks e conceitos:
-- Swagger para documentação da API.
-- Healthcheck para monitoramento da aplicação.
+Neste projeto foi aplicado:
+>> - Swagger: para UI e documentação da API.
+>> - Healthcheck: com UI para monitoramento da aplicação.
+>> - Injeção de dependência com o container próprio da Microsoft.
+>> - AutoMapper: mapeamento de entidades.
+>> - Memory Cache: armazenado com duração até as 00:00h do dia seguinte.
+>> - HttpClientFactory: para manipulações de requisições.
+>> - Http Polly: configurado handlers de Retry e Circuit Breaker.
+>> - Para testes, foi utilizado:
+>>> - xUnit
+>>> - Bogus: para data fake generator.
+>>> - FluentAssertions: para validação dos testes.
+>>> - Moq: para criação de objetos.
 
 ## Author
 
