@@ -28,8 +28,10 @@
 
 ## Usage
 - Para utilizar o swagger utilize o endpoint: swagger/index.html
+![Swagger UI](imagens/Investimentos_swagger.png)
 > Healthcheck está disponível nos endpoints:
 > - healthchecks-ui (Dashboard)
+![](imagens/Investimentos_healthchecks.png)
 > - /status (json para consulta de outras aplicações)
 ## Author
 
